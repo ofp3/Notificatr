@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+			/*----- Tabs -----*/
+		.tabs {
+		    width:100%;
+		    display:inline-block;
+		}
+
+		    /*----- Tab Links -----*/
+		    /* Clearfix */
+		    .tab-links {
+		    	margin-bottom: 0px;
+		    }
+		    .tab-links:after {
+		        display:block;
+		        clear:both;
+		        content:'';
+		    }
+		 
+		    .tab-links li {
+		        margin:0px 5px;
+		        float:left;
+		        list-style:none;
+		    }
+		 
+		        .tab-links a {
+		            padding:9px 15px;
+		            display:inline-block;
+		            border-radius:3px 3px 0px 0px;
+		            background:#7FB5DA;
+		            font-size:16px;
+		            font-weight:600;
+		            color:#4c4c4c;
+		            transition:all linear 0.15s;
+		        }
+		 
+		        .tab-links a:hover {
+		            background:#a7cce5;
+		            text-decoration:none;
+		        }
+		 
+		    li.active a, li.active a:hover {
+		        background:#fff;
+		        color:#4c4c4c;
+		    }
+		 
+		    /*----- Content of Tabs -----*/
+		    .tab-content {
+		        padding:15px;
+		        border-radius:3px;
+		        box-shadow:-1px 1px 1px rgba(0,0,0,0.15);
+		        background:#fff;
+		        width: auto;
+		    }
+		 
+		        .tab {
+		            display:none;
+		            width: auto;
+		        }
+		 
+		        .tab.active {
+		            display:block;
+		        }
+		body {
+			background: #7F7F7F;
+		}
+	</style>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="notificator.js"></script>
+	<script>
+		jQuery(document).ready(function() {
+		    jQuery('.tabs .tab-links a').on('click', function(e)  {
+		        var currentAttrValue = jQuery(this).attr('href');
+		 
+		        // Show/Hide Tabs
+		        jQuery('.tabs ' + currentAttrValue).show().siblings().hide();
+		 
+		        // Change/remove current tab to active
+		        jQuery(this).parent('li').addClass('active').siblings().removeClass('active');
+		 
+		        e.preventDefault();
+		    });
+		});
+
+		function showMarkdown() {
+			console.log("showMarkdown");
+		}
+		function showTheorems() {
+			console.log("Theorems");
+		}
+		function showEquations() {
+			console.log("Equations");
+		}
+	</script>
+</head>
+<body>
+<div class="tabs">
+    <ul class="tab-links">
+        <li class="active"><a href="#tab1">Editor</a></li>
+        <li><a href="#tab2" onclick="showMarkdown()">Markdown</a></li>
+        <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
+        <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
+    </ul>
+ 
+    <div class="tab-content">
+        <div id="tab1" class="tab active" >
+            <textarea rows="30" cols="80" autofocus></textarea>
+        </div>
+ 
+        <div id="tab2" class="tab">
+            <p>Markdown TBD</p>
+        </div>
+ 
+        <div id="tab3" class="tab">
+            <p>Theorems TBD</p>
+        </div>
+ 
+        <div id="tab4" class="tab">
+            <p>Equations TBD</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
