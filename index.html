@@ -94,11 +94,11 @@
 		}
 		function showTheorems() {
 			console.log("Theorems");
-			document.getElementById("Theorems").innerHTML = filterTags(document.getElementById("editor").value, "thm");
+			document.getElementById("tab3").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "thm"));
 		}
 		function showEquations() {
 			console.log("Equations");
-			document.getElementById("Equations").innerHTML = filterTags(document.getElementById("editor").value, "eq");
+			document.getElementById("tab4").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "eq"));
 		}
 	</script>
 </head>
