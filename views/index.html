@@ -159,13 +159,76 @@
             updateCompiled();
 		}
 		function saveToFile(type){
-			$.post("/saveToFile", {"data": (type == 'raw')?$('#editor').val():$('#compiled').html(), "type": type}, function(data){
+			$.post("/saveToFile", {"data": (type == 'raw')?$('#editor').val():$('#compiled').html(), "type": type, name: $('#file_select').val()}, function(data){
 				window.alert("Successfully saved to file!");
 			});
 		}
 		function printPDF(){
 			$.post('/printerFriendly', {data: $('#compiled').html()}, function(){
 				window.open('printerFriendly');
+			});
+		}
+		function notebook_select_changed(){	
+			$('.from_listing').remove();
+			if($('#notebook_select').val() == ""){
+				$('#file_select').attr('disabled', 'disabled');	// Change file_select state
+				$('#title_label').css('display', 'initial');
+				$('#file_select_button').text('Create');// Change file_select_button state
+				$('#create_text').css('display', 'initial');// Change create_text state
+			}else{
+				$('#file_select').removeAttr('disabled');	//Change file_select state
+				$.get('/file_listing/' + $('#notebook_select').val(), function(result){
+					var arr = result;//JSON.parse(result);
+					for(var i = 0; i < arr.length; i++)
+						$('#file_select').html($('#file_select').html() + "<option class='from_listing' val='" + arr[i].substr(0, arr[i].length - 4) + 
+							"'>" + arr[i].substr(0, arr[i].length - 4) + "</option>");
+				});
+			}
+		}
+		function file_select_changed(){
+			if($('#file_select').val() == ""){
+				$('#title_label').css('display', 'initial');
+				$('#file_select_button').text('Create');// Change file_select_button state
+				$('#create_text').css('display', 'initial');// Change create_text state
+			}
+			else{
+				$('#title_label').css('display', 'none');
+				$('#file_select_button').text('Open');// Change file_select_button state
+				$('#create_text').css('display', 'none');// Change create_text state
+			}
+
+		}
+		function file_select_button_clicked(){
+			if($('#notebook_select').val() == ""){
+				//create notebook
+				$.post('/createNotebook', {name: $('#create_text').val()}, function(result){
+					alert("New Notebook " + result + " created!");
+					//Add the new notebook option selected to the notebook_select
+					$('#notebook_select').html($('#notebook_select').html() + "<option val='" + result + "'selected>" + result + "</option>");
+					notebook_select_changed();
+				});
+			}
+			else if($('#file_select').val() == ""){
+				//create note
+				$.post('/createNote', {name: $('#create_text').val()}, function(result){
+					alert("New Note " + result + " created!");
+					//Add the new note option selected to the file_select
+					$('#file_select').html($('#file_select').html() + "<option class='from_listing' val='" + result.substr(0, result.length - 4) + "'selected>" + result.substr(0, result.length - 4) + "</option>");
+					file_select_changed();
+				});
+			}
+			else{
+				$.post('/openNote', {name: $('#file_select').val()}, function(result){
+					$('#editor').val(result);
+					updateCompiled();
+				});
+			}
+		}
+		window.onload = function(){
+			$.get('/directory_listing', function(result){
+				var arr = result;
+				for(var i = 0; i < arr.length; i++)
+					$('#notebook_select').html($('#notebook_select').html() + "<option val='" + arr[i] + "'>" + arr[i] + "</option>");
 			});
 		}
 	</script>
@@ -177,11 +240,24 @@
         <li><a href="#tab2" onclick="showOutline()">Outline</a></li>
         <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
         <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
+    	<span style="float: right">
+    		<!-- <label id="title_label" for="note_title">Title: </label> -->
+    		<input id="create_text" type="text" placeholder='Enter New Title Here' id="title"/>
+    		<label for="notebook_select">Notebook:</label>
+    		<select id="notebook_select" onchange="notebook_select_changed();">
+    			<option value=''>--- New Notebook ---</option>
+    		</select>
+    		<label for="file_select">File:</label>
+	    	<select id="file_select" onchange="file_select_changed();" disabled>
+	    		<option value=''>--- New Note ---</option>
+	    	</select>
+    		<button id="file_select_button" style="margin-right: 25px;" onclick="file_select_button_clicked();">Create</button>
+    	</span>
     </ul>
 
     <div class="tab-content">
         <div id="tab1" class="tab active">
-		    <div>
+		    <div id="submenubar">
 		    	<button onclick="addTheorem()">Theorem</button>
 		    	<button onclick="addEquation()">Equation</button>
 		    	<button onclick="addImage()">Image</button>
@@ -198,8 +274,11 @@
 		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
 		    	</form>
 		    	<button onclick="saveToFile('raw');">Save Raw</button>
-		    	<button onclick="saveToFile('HTML');">Save HTML</button>
+		    	<!-- <button onclick="saveToFile('HTML');">Save HTML</button> -->
 		    	<button onclick="printPDF();">Print PDF</button>
+		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data" style="display: none">
+		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
+		    	</form>
 		    </div>
 
         	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">
