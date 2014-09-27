@@ -3,8 +3,10 @@ var busboy = require('connect-busboy');
 var fs = require('fs');
 var app = express();
 app.use(busboy());
+app.engine("html", require('ejs').renderFile);
+
 app.get('/', function(req, res) {
-	res.send('hello world');
+	res.render('index.html');
 });
 app.post('/img', function(req, res) {
 	var fstream;
@@ -19,7 +21,7 @@ app.post('/img', function(req, res) {
 	});
 	req.busboy.on('finish', function() {
 		console.log('finished request');
-		res.send('something something image');
+		res.status(304).send("Done");
 	});
 });
 app.use(express.static(__dirname));

@@ -1,26 +1,26 @@
-function changeAllTags(source, tagList) {
-	for(i = 0; i < tagList.length; i++) {
-		source = changeTags(source, tagList[i]);
+function changeAllTags(source, startChars, endChars) {
+	for(var tag in startChars){
+		source = changeTags(source, tag, startChars[tag], endChars[tag]);
 	}
+	console.log(source);
 	return source;
 }
 
-function changeTags(source, tag) {
-	// source = source.replace("\\" + tag, "<!---" + tag + "--->");
-	// source = source.replace("\\" + tag + "*", "<!---" + tag + "*--->");
+function changeTags(source, tag, startChar, endChar) {
 	while(source.indexOf("\\" + tag) > -1){
-		source = source.replace("\\" + tag, "");
-		source = source.replace("\\" + tag + "*", "\n");
+		source = source.replace("\\" + tag + "*", endChar + "\n");
+		source = source.replace("\\" + tag, startChar);
 	}
 	return source;
 }
 
-function filterTags(source, tag) {
+function filterTags(source, tag, replacement) {
 	var filteredText = "";
 	while(source.indexOf("\\" + tag) != -1 && source.indexOf("\\" + tag + "*") != -1) {
-		filteredText += source.substring(source.indexOf("\\" + tag) + (tag.length + 1), source.indexOf("\\" + tag + "*"));
+		filteredText += source.substring(source.indexOf("\\" + tag), source.indexOf("\\" + tag + "*") + tag.length + 2);
 		source = source.substring(source.indexOf("\\" + tag + "*") + (tag.length + 2), source.length);
-		filteredText += "\n";
+		filteredText = filteredText.replace("\\" + tag + "*", replacement + "\n\n");
+		filteredText = filteredText.replace("\\" + tag, replacement);
 	}
 	return filteredText;
 }

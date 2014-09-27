@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style>
+			/*----- Tabs -----*/
+		.tabs {
+		    width:100%;
+		    display:inline-block;
+		}
+
+		    /*----- Tab Links -----*/
+		    /* Clearfix */
+		    .tab-links {
+		    	margin-bottom: 0px;
+		    }
+		    .tab-links:after {
+		        display:block;
+		        clear:both;
+		        content:'';
+		    }
+		 
+		    .tab-links li {
+		        margin:0px 5px;
+		        float:left;
+		        list-style:none;
+		    }
+		 
+		        .tab-links a {
+		            padding:9px 15px;
+		            display:inline-block;
+		            border-radius:3px 3px 0px 0px;
+		            background:#7FB5DA;
+		            font-size:16px;
+		            font-weight:600;
+		            color:#4c4c4c;
+		            transition:all linear 0.15s;
+		        }
+		 
+		        .tab-links a:hover {
+		            background:#a7cce5;
+		            text-decoration:none;
+		        }
+		 
+		    li.active a, li.active a:hover {
+		        background:#fff;
+		        color:#4c4c4c;
+		    }
+		 
+		    /*----- Content of Tabs -----*/
+		    .tab-content {
+		        padding:15px;
+		        border-radius:3px;
+		        box-shadow:-1px 1px 1px rgba(0,0,0,0.15);
+		        background:#fff;
+		        width: auto;
+		    }
+		 
+		        .tab {
+		            display:none;
+		            width: auto;
+		        }
+		 
+		        .tab.active {
+		            display:block;
+		        }
+		body {
+			background: #7F7F7F;
+		}
+	</style>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="lib/ASCIIMathMLwFallback.js"></script>
+	<script type="text/javascript" src="notificator.js"></script>
+	<script type="text/javascript" src="lib/markdown.js"></script>
+	<script>
+		var LIST_OF_TAGS = ["thm", "eq", "img"];
+		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/"};
+		var ENDING_CHARS = {"thm": "", "eq": "$eq$", "img": " \"\")"};
+
+		jQuery(document).ready(function() {
+		    jQuery('.tabs .tab-links a').on('click', function(e)  {
+		        var currentAttrValue = jQuery(this).attr('href');
+		 
+		        // Show/Hide Tabs
+		        jQuery('.tabs ' + currentAttrValue).show().siblings().hide();
+		 
+		        // Change/remove current tab to active
+		        jQuery(this).parent('li').addClass('active').siblings().removeClass('active');
+		 
+		        e.preventDefault();
+		    });
+		});
+
+		function updateCompiled(){
+			document.getElementById('compiled').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
+			generic();
+		}
+
+		function showMarkdown() {
+			console.log("Markdown");
+			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
+		}
+		function showTheorems() {
+			console.log("Theorems");
+			document.getElementById("tab3").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "thm", STARTING_CHARS["thm"]));
+		}
+		function showEquations() {
+			console.log("Equations");
+			document.getElementById("Equations").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "eq", STARTING_CHARS["eq"]));
+			generic();
+		}
+		function addImage() {
+			document.getElementById("image_input").click();
+		}
+		function imageSubmitted(){
+			document.getElementById('imageForm').submit();
+			var full_filepath = document.getElementById('image_input').value;
+			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
+			window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
+		}
+	</script>
+</head>
+<body>
+<div class="tabs">
+    <ul class="tab-links">
+        <li class="active"><a href="#tab1">Editor</a></li>
+        <li><a href="#tab2" onclick="showMarkdown()">Markdown</a></li>
+        <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
+        <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="tab1" class="tab active">
+		    <div>
+		    	<button>Theorem</button>
+		    	<button>Equation</button>
+		    	<button onclick="addImage()">Image</button>
+		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
+		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
+		    	</form>
+		    </div>
+
+        	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">
+            	<textarea id="editor" oninput="updateCompiled()" autofocus style="height: 520px; width: 100%; resize: none;"></textarea>
+        	</div>
+        	<div id="compiled" style="display: inline-block; width: 48%; padding-left: 20px; vertical-align: top; overflow-y: auto; height: 520px;">
+        	</div>
+        </div>
+ 
+        <div id="tab2" class="tab">
+            <p>Markdown TBD</p>
+        </div>
+ 
+        <div id="tab3" class="tab">
+            <pre id="Theorems">Theorems TBD</pre>
+        </div>
+ 
+        <div id="tab4" class="tab">
+            <pre id="Equations">Equations TBD</pre>
+        </div>
+    </div>
+</div>
+</body>
+</html>
