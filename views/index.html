@@ -104,9 +104,9 @@
 			generic();
 		}
 
-		function showMarkdown() {
-			console.log("Markdown");
-			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
+		function showOutline() {
+			console.log("Outline");
+			document.getElementById('tab2').innerHTML = markdown.toHTML(makeOutline(document.getElementById("editor").value));
 		}
 		function showTheorems() {
 			console.log("Theorems");
@@ -114,7 +114,7 @@
 		}
 		function showEquations() {
 			console.log("Equations");
-			document.getElementById("Equations").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "eq", STARTING_CHARS["eq"]));
+			document.getElementById("Equations").innerHTML = markdown.toHTML(filterEqns(document.getElementById("editor").value, STARTING_CHARS["eq"]));
 			generic();
 		}
 		function addImage() {
@@ -142,7 +142,7 @@
 <div class="tabs">
     <ul class="tab-links">
         <li class="active"><a href="#tab1">Editor</a></li>
-        <li><a href="#tab2" onclick="showMarkdown()">Markdown</a></li>
+        <li><a href="#tab2" onclick="showOutline()">Outline</a></li>
         <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
         <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
     </ul>
