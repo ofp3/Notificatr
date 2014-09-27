@@ -25,16 +25,24 @@ app.post('/img', function(req, res) {
 	});
 });
 app.post('/saveToFile', function(req, res) {
+	var data; 
+	var filename;
 	req.pipe(req.busboy);
 	req.busboy.on('field', function(fieldname, val){
 		console.log("saveToFile got a field");
 		if(fieldname == "data")
-			fs.writeFile('files/save' + new Date().toISOString() + ".txt", val, function(err){
+			data = val;
+		else if(fieldname == "type")
+			if(val == "raw")
+				filename = "files/save" + new Date().toISOString() + ".txt";
+			else
+				filename = "files/save" + new Date().toISOString() + ".html";
+	});
+	req.busboy.on('finish', function(){
+		fs.writeFile(filename, data, function(err){
 				if(err)
 					console.log(err);
 			});
-	});
-	req.busboy.on('finish', function(){
 		res.status(304).send("DONE saving");
 	});
 });

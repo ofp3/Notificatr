@@ -118,16 +118,8 @@
 			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
 			window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
 		}
-		function saveToFile(){
-			// console.log($('#editor').val());
-			// $.ajax({
-			// 	type: 'POST',
-			// 	url: "/saveToFile",
-			// 	data: {"data": "stuff"},
-			// 	contentType: "application/json",
-			// 	complete: function(result){window.alert("Successfully saved to file!")}
-			// });
-			$.post("/saveToFile", {"data": $('#editor').val()}, function(data){
+		function saveToFile(type){
+			$.post("/saveToFile", {"data": (type == 'raw')?$('#editor').val():$('#compiled').html(), "type": type}, function(data){
 				window.alert("Successfully saved to file!");
 			});
 		}
@@ -151,7 +143,8 @@
 		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
 		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
 		    	</form>
-		    	<button onclick="saveToFile()">Save File</button>
+		    	<button onclick="saveToFile('raw');">Save Raw</button>
+		    	<button onclick="saveToFile('HTML');">Save HTML</button>
 		    </div>
 
         	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">
