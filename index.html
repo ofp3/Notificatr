@@ -70,7 +70,10 @@
 	</style>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="notificator.js"></script>
+	<script type="text/javascript" src="lib/markdown.js"></script>
 	<script>
+	var LIST_OF_TAGS = ["thm", "eq"];
+
 		jQuery(document).ready(function() {
 		    jQuery('.tabs .tab-links a').on('click', function(e)  {
 		        var currentAttrValue = jQuery(this).attr('href');
@@ -87,6 +90,7 @@
 
 		function showMarkdown() {
 			console.log("Markdown");
+			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, LIST_OF_TAGS));
 		}
 		function showTheorems() {
 			console.log("Theorems");
