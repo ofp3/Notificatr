@@ -8,7 +8,7 @@ function changeAllTags(source, tagList) {
 function changeTags(source, tag) {
 	source = source.replace("\\" + tag, "<!--" + tag + "-->");
 	source = source.replace("\\" + tag + "*", "<!--" + tag + "*-->");
-	return source
+	return source;
 }
 
 function filterTags(source, tag) {
@@ -16,6 +16,7 @@ function filterTags(source, tag) {
 	while(source.indexOf("\\" + tag) != -1 && source.indexOf("\\" + tag + "*") != -1) {
 		filteredText += source.substring(source.indexOf("\\" + tag) + (tag.length + 1), source.indexOf("\\" + tag + "*"));
 		source = source.substring(source.indexOf("\\" + tag + "*") + (tag.length + 2), source.length);
+		filteredText += "\n";
 	}
 	return filteredText;
 }

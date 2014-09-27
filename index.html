@@ -86,13 +86,15 @@
 		});
 
 		function showMarkdown() {
-			console.log("showMarkdown");
+			console.log("Markdown");
 		}
 		function showTheorems() {
 			console.log("Theorems");
+			document.getElementById("Theorems").innerHTML = filterTags(document.getElementById("editor").value, "thm");
 		}
 		function showEquations() {
 			console.log("Equations");
+			document.getElementById("Equations").innerHTML = filterTags(document.getElementById("editor").value, "eq");
 		}
 	</script>
 </head>
@@ -107,7 +109,7 @@
  
     <div class="tab-content">
         <div id="tab1" class="tab active" >
-            <textarea rows="30" cols="80" autofocus></textarea>
+            <textarea id="editor" rows="30" cols="80" autofocus></textarea>
         </div>
  
         <div id="tab2" class="tab">
@@ -115,11 +117,11 @@
         </div>
  
         <div id="tab3" class="tab">
-            <p>Theorems TBD</p>
+            <pre id="Theorems">Theorems TBD</pre>
         </div>
  
         <div id="tab4" class="tab">
-            <p>Equations TBD</p>
+            <pre id="Equations">Equations TBD</pre>
         </div>
     </div>
 </div>
