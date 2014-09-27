@@ -1,8 +1,10 @@
+// regex index of function used in makeOutline
 String.prototype.regexIndexOf = function(regex, startpos) {
     var indexOf = this.substring(startpos || 0).search(regex);
     return (indexOf >= 0) ? (indexOf + (startpos || 0)) : indexOf;
 }
 
+// repeat function used in makeOutline
 String.prototype.repeat = function( num )
 {
     return new Array( num + 1 ).join( this );

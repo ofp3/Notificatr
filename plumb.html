@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <script type="text/javascript" src="lib/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="lib/jquery-ui.min.js"></script>    
+    <script type="text/javascript" src="lib/jquery.jsPlumb-1.6.4.js"></script>
+    <link rel="stylesheet" href="lib/plumb.css" type="text/css" />
+    <style type="text/css">
+      <!-- We will add style here -->
+    </style>
+
+    <title>jsplumb stuff</title>
+  </head>  
+
+  <body>
+    <div id="container"></div>
+    <script type="text/javascript">
+    
+    jsPlumb.ready(function() {
+
+
+
+    jsPlumb.bind("click", function(conn) {
+      if (confirm("Delete connection from " + conn.sourceId + " to " + conn.targetId + "?"))
+        jsPlumb.detach(conn); 
+    });
+  jsPlumb.setContainer($('#container'));
+
+  
+
+
+  var i = 0;
+  $('#container').click(function(e) {
+    $('.connect').hide();
+  });
+  
+  $('#container').dblclick(function(e) {
+    var newState = $('<div>').attr('id', 'state' + i).addClass('item'); 
+    var title = $('<div>').addClass('title').text('State ' + i);
+    var connect_l = $('<div>').addClass('connect_l').addClass('connect').hide();
+    var connect_r = $('<div>').addClass('connect_r').addClass('connect').hide();
+    var connect_t = $('<div>').addClass('connect_t').addClass('connect').hide();
+    var connect_b = $('<div>').addClass('connect_b').addClass('connect').hide();
+    
+    newState.css({
+      'top': e.pageY,
+      'left': e.pageX
+    });
+    jsPlumb.draggable(newState, {
+      containment: 'parent'
+    });
+
+    newState.click(function(e) {
+      $('.connect').hide();
+      for (var j = 1; j < 5; j++) {
+        $(this.children[j]).css('display', 'block');
+      }
+      e.stopPropagation();
+    });
+    newState.dblclick(function(e) {
+      jsPlumb.detachAllConnections($(this));
+      $(this).remove();
+      e.stopPropagation();
+    });
+    
+    newState.append(title);
+    newState.append(connect_l);
+    newState.append(connect_r);
+    newState.append(connect_t);
+    newState.append(connect_b);
+    
+    $('#container').append(newState);
+
+    jsPlumb.makeTarget(newState, {
+      parent: newState,
+      anchor: 'Continuous'
+    });
+
+    jsPlumb.makeSource(connect_l, {
+      parent: newState,
+      anchor: 'Continuous'
+    });
+    
+    jsPlumb.makeSource(connect_r, {
+      parent: newState,
+      anchor: 'Continuous'
+    });
+
+    jsPlumb.makeSource(connect_t, {
+      parent: newState,
+      anchor: 'Continuous'
+    });
+
+    jsPlumb.makeSource(connect_b, {
+      parent: newState,
+      anchor: 'Continuous'
+    });
+    i++;    
+  });  
+});
+    </script>
+  </body>
+</html>
