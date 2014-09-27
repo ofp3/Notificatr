@@ -119,10 +119,33 @@
 			generic();
 		}
         function addTheorem() {
-            $('#editor').insertAtCaret("\\thm","\\thm*");
+            $('#editor').insertAtCaret("\\thm "," \\thm*");
         }
         function addEquation() {
-            $('#editor').insertAtCaret("\\eq","\\eq*");
+            $('#editor').insertAtCaret("\\eq "," \\eq*");
+        }
+        function addHead(size) {
+            $('#editor').insertAtCaret("\\h"+size+' ', " \\h"+size+"*")
+        }
+        function addBold() {
+            $('#editor').insertAtCaret("**","**");
+        }
+        function addItalic() {
+            $('#editor').insertAtCaret("*","*");
+        }
+        function addQuote() {
+            $('#editor').insertAtCaret('> ','');
+        }
+        function addCode() {
+            $('#editor').insertAtCaret('```\n','\n```');
+        }
+        function addHR() {
+            $('#editor').insertAtCaret('---','');
+        }
+        function addLink() {
+            url = prompt("Enter url","http://");
+            $('#editor').insertAtCaret("[Link text","]("+url+")");
+            updateCompiled();
         }
 		function addImage() {
 			document.getElementById("image_input").click();
@@ -131,7 +154,9 @@
 			document.getElementById('imageForm').submit();
 			var full_filepath = document.getElementById('image_input').value;
 			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
-			window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
+			//window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
+            $('#editor').insertAtCaret("\\img" + filename + "\\img*", "");
+            updateCompiled();
 		}
 		function saveToFile(type){
 			$.post("/saveToFile", {"data": (type == 'raw')?$('#editor').val():$('#compiled').html(), "type": type}, function(data){
@@ -160,6 +185,15 @@
 		    	<button onclick="addTheorem()">Theorem</button>
 		    	<button onclick="addEquation()">Equation</button>
 		    	<button onclick="addImage()">Image</button>
+                <button onclick="addLink()">Link</button>
+                <button onclick="addHead('1')">H1</button>
+                <button onclick="addHead('2')">H2</button>
+                <button onclick="addHead('3')">H3</button>
+                <button onclick="addBold()">B</button>
+                <button onclick="addItalic()">I</button>
+                <button onclick="addQuote()">Quote</button>
+                <button onclick="addCode()">Code</button>
+                <button onclick="addHR()">HR</button>
 		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
 		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
 		    	</form>
