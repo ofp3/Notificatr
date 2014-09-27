@@ -106,7 +106,7 @@
 		}
 		function showEquations() {
 			console.log("Equations");
-			document.getElementById("Equations").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "eq", STARTING_CHARS["eq"]));
+			document.getElementById("Equations").innerHTML = markdown.toHTML(filterEqns(document.getElementById("editor").value, STARTING_CHARS["eq"]));
 			generic();
 		}
 		function addImage() {

@@ -35,6 +35,19 @@ function filterTags(source, tag, replacement) {
 	return filteredText;
 }
 
+function filterEqns(source, replacement) {
+	var count = 0;
+	var filteredText = "";
+	while(source.indexOf("\\eq") != -1 && source.indexOf("\\eq*") != -1) {
+		count++;
+		filteredText += source.substring(source.indexOf("\\eq"), source.indexOf("\\eq*") + 5);
+		source = source.substring(source.indexOf("\\eq*") + 5, source.length);
+		filteredText = filteredText.replace("\\eq*", replacement + "\n\n");
+		filteredText = filteredText.replace("\\eq", count + " " + replacement);
+	}
+	return filteredText;
+}
+
 function makeOutline(source) {
 	var filteredText = "";
 	while(source.regexIndexOf(/\\h[123]/, 0) != -1 && source.regexIndexOf(/\\h[123]\*/, 0) != -1) {
