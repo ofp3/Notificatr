@@ -5,7 +5,7 @@
   "private": true,
   "dependencies": {
 	"connect": "3.2.0",
-    "express": "4.x",
-	"busboy": "0.8.0"
+	"express": "4.x",
+	"connect-busboy": "0.0.1"
   }
 }

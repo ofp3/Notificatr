@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
+	<title>NoteKing</title>
 	<style>
 			/*----- Tabs -----*/
 		.tabs {
@@ -69,10 +69,13 @@
 		}
 	</style>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="lib/ASCIIMathMLwFallback.js"></script>
 	<script type="text/javascript" src="notificator.js"></script>
 	<script type="text/javascript" src="lib/markdown.js"></script>
 	<script>
-	var LIST_OF_TAGS = ["thm", "eq"];
+		var LIST_OF_TAGS = ["thm", "eq", "img", "h1"];
+		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/", "h1": "", "h2": "", "h3": "###"};
+		var ENDING_CHARS = {"thm": "", "eq": "$eq$", "img": " \"\")", "h1": "\n===", "h2": "\n---", "h3": "###"};
 
 		jQuery(document).ready(function() {
 		    jQuery('.tabs .tab-links a').on('click', function(e)  {
@@ -88,17 +91,45 @@
 		    });
 		});
 
+		function updateCompiled(){
+			document.getElementById('compiled').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
+			generic();
+		}
+
 		function showMarkdown() {
 			console.log("Markdown");
-			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, LIST_OF_TAGS));
+			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
 		}
 		function showTheorems() {
 			console.log("Theorems");
-			document.getElementById("Theorems").innerHTML = filterTags(document.getElementById("editor").value, "thm");
+			document.getElementById("tab3").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "thm", STARTING_CHARS["thm"]));
 		}
 		function showEquations() {
 			console.log("Equations");
-			document.getElementById("Equations").innerHTML = filterTags(document.getElementById("editor").value, "eq");
+			document.getElementById("Equations").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "eq", STARTING_CHARS["eq"]));
+			generic();
+		}
+		function addImage() {
+			document.getElementById("image_input").click();
+		}
+		function imageSubmitted(){
+			document.getElementById('imageForm').submit();
+			var full_filepath = document.getElementById('image_input').value;
+			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
+			window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
+		}
+		function saveToFile(){
+			// console.log($('#editor').val());
+			// $.ajax({
+			// 	type: 'POST',
+			// 	url: "/saveToFile",
+			// 	data: {"data": "stuff"},
+			// 	contentType: "application/json",
+			// 	complete: function(result){window.alert("Successfully saved to file!")}
+			// });
+			$.post("/saveToFile", {"data": $('#editor').val()}, function(data){
+				window.alert("Successfully saved to file!");
+			});
 		}
 	</script>
 </head>
@@ -110,10 +141,24 @@
         <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
         <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
     </ul>
- 
+
     <div class="tab-content">
-        <div id="tab1" class="tab active" >
-            <textarea id="editor" rows="30" cols="80" autofocus></textarea>
+        <div id="tab1" class="tab active">
+		    <div>
+		    	<button>Theorem</button>
+		    	<button>Equation</button>
+		    	<button onclick="addImage()">Image</button>
+		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
+		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
+		    	</form>
+		    	<button onclick="saveToFile()">Save File</button>
+		    </div>
+
+        	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">
+            	<textarea id="editor" oninput="updateCompiled()" autofocus style="height: 520px; width: 100%; resize: none;"></textarea>
+        	</div>
+        	<div id="compiled" style="display: inline-block; width: 48%; padding-left: 20px; vertical-align: top; overflow-y: auto; height: 520px;">
+        	</div>
         </div>
  
         <div id="tab2" class="tab">
