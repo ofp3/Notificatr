@@ -88,6 +88,10 @@
 		    });
 		});
 
+		function updateCompiled(){
+			document.getElementById('compiled').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, LIST_OF_TAGS));
+		}
+
 		function showMarkdown() {
 			console.log("Markdown");
 			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, LIST_OF_TAGS));
@@ -112,8 +116,12 @@
     </ul>
  
     <div class="tab-content">
-        <div id="tab1" class="tab active" >
-            <textarea id="editor" rows="30" cols="80" autofocus></textarea>
+        <div id="tab1" class="tab active">
+        	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">
+            	<textarea id="editor" oninput="updateCompiled()" autofocus style="height: 520px; width: 100%; resize: none;"></textarea>
+        	</div>
+        	<div id="compiled" style="display: inline-block; width: 48%; padding-left: 20px; vertical-align: top; overflow-y: auto; height: 520px;">
+        	</div>
         </div>
  
         <div id="tab2" class="tab">
