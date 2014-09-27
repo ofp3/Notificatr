@@ -80,6 +80,7 @@
 	<script type="text/javascript" src="lib/ASCIIMathMLwFallback.js"></script>
 	<script type="text/javascript" src="notificator.js"></script>
 	<script type="text/javascript" src="lib/markdown.js"></script>
+    <script type="text/javascript" src="lib/insertatcursor.js"></script>
 	<script>
 		var LIST_OF_TAGS = ["thm", "eq", "img", "h1"];
 		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/", "h1": "", "h2": "", "h3": "###"};
@@ -117,6 +118,12 @@
 			document.getElementById("Equations").innerHTML = markdown.toHTML(filterEqns(document.getElementById("editor").value, STARTING_CHARS["eq"]));
 			generic();
 		}
+        function addTheorem() {
+            $('#editor').insertAtCaret("\\thm","\\thm*");
+        }
+        function addEquation() {
+            $('#editor').insertAtCaret("\\eq","\\eq*");
+        }
 		function addImage() {
 			document.getElementById("image_input").click();
 		}
@@ -150,8 +157,8 @@
     <div class="tab-content">
         <div id="tab1" class="tab active">
 		    <div>
-		    	<button>Theorem</button>
-		    	<button>Equation</button>
+		    	<button onclick="addTheorem()">Theorem</button>
+		    	<button onclick="addEquation()">Equation</button>
 		    	<button onclick="addImage()">Image</button>
 		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
 		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
