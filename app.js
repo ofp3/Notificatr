@@ -25,17 +25,44 @@ app.post('/img', function(req, res) {
 	});
 });
 app.post('/saveToFile', function(req, res) {
+	var data; 
+	var filename;
 	req.pipe(req.busboy);
 	req.busboy.on('field', function(fieldname, val){
 		console.log("saveToFile got a field");
 		if(fieldname == "data")
-			fs.writeFile('files/save' + new Date().toISOString() + ".txt", val, function(err){
-				if(err)
-					console.log(err);
-			});
+			data = val;
+		else if(fieldname == "type")
+			if(val == "raw")
+				filename = "files/save" + new Date().toISOString() + ".txt";
+			else
+				filename = "files/save" + new Date().toISOString() + ".html";
 	});
 	req.busboy.on('finish', function(){
-		res.status(304).send("DONE saving");
+		fs.writeFile(filename, data, function(err){
+				if(err)
+					console.log(err);
+				res.download(filename);
+			});
+		// res.status(304).send("DONE saving");
+	});
+});
+app.get('/printerFriendly', function(req, res){
+	res.render('printerFriendly.html');
+});
+app.post('/printerFriendly', function(req, res){
+	var data;
+	req.pipe(req.busboy);
+	req.busboy.on('field', function(fieldname, val){
+		if(fieldname == 'data')
+			data = val;
+	});
+	req.busboy.on('finish', function(){
+		fs.writeFile('views/printerFriendly.html', data, function(err){
+			if(err)
+				console.log(err);
+			res.status(304).send('OK');
+		});
 	});
 });
 app.use(express.static(__dirname));

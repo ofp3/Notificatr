@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>NoteKing</title>
-	<style>
+	<style media="screen">
 			/*----- Tabs -----*/
 		.tabs {
 		    width:100%;
@@ -68,10 +68,19 @@
 			background: #7F7F7F;
 		}
 	</style>
+	<style media="print">
+		.noPrint {
+			display: none;
+		}
+		.yesPrint {
+			display: block !important;
+		}
+	</style>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="lib/ASCIIMathMLwFallback.js"></script>
 	<script type="text/javascript" src="notificator.js"></script>
 	<script type="text/javascript" src="lib/markdown.js"></script>
+    <script type="text/javascript" src="lib/insertatcursor.js"></script>
 	<script>
 		var LIST_OF_TAGS = ["thm", "eq", "img", "h1"];
 		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/", "h1": "", "h2": "", "h3": "###"};
@@ -96,9 +105,9 @@
 			generic();
 		}
 
-		function showMarkdown() {
-			console.log("Markdown");
-			document.getElementById('tab2').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
+		function showOutline() {
+			console.log("Outline");
+			document.getElementById('tab2').innerHTML = markdown.toHTML(makeOutline(document.getElementById("editor").value));
 		}
 		function showTheorems() {
 			console.log("Theorems");
@@ -106,9 +115,38 @@
 		}
 		function showEquations() {
 			console.log("Equations");
-			document.getElementById("Equations").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "eq", STARTING_CHARS["eq"]));
+			document.getElementById("Equations").innerHTML = markdown.toHTML(filterEqns(document.getElementById("editor").value, STARTING_CHARS["eq"]));
 			generic();
 		}
+        function addTheorem() {
+            $('#editor').insertAtCaret("\\thm "," \\thm*");
+        }
+        function addEquation() {
+            $('#editor').insertAtCaret("\\eq "," \\eq*");
+        }
+        function addHead(size) {
+            $('#editor').insertAtCaret("\\h"+size+' ', " \\h"+size+"*")
+        }
+        function addBold() {
+            $('#editor').insertAtCaret("**","**");
+        }
+        function addItalic() {
+            $('#editor').insertAtCaret("*","*");
+        }
+        function addQuote() {
+            $('#editor').insertAtCaret('> ','');
+        }
+        function addCode() {
+            $('#editor').insertAtCaret('```\n','\n```');
+        }
+        function addHR() {
+            $('#editor').insertAtCaret('---','');
+        }
+        function addLink() {
+            url = prompt("Enter url","http://");
+            $('#editor').insertAtCaret("[Link text","]("+url+")");
+            updateCompiled();
+        }
 		function addImage() {
 			document.getElementById("image_input").click();
 		}
@@ -116,19 +154,18 @@
 			document.getElementById('imageForm').submit();
 			var full_filepath = document.getElementById('image_input').value;
 			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
-			window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
+			//window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
+            $('#editor').insertAtCaret("\\img" + filename + "\\img*", "");
+            updateCompiled();
 		}
-		function saveToFile(){
-			// console.log($('#editor').val());
-			// $.ajax({
-			// 	type: 'POST',
-			// 	url: "/saveToFile",
-			// 	data: {"data": "stuff"},
-			// 	contentType: "application/json",
-			// 	complete: function(result){window.alert("Successfully saved to file!")}
-			// });
-			$.post("/saveToFile", {"data": $('#editor').val()}, function(data){
+		function saveToFile(type){
+			$.post("/saveToFile", {"data": (type == 'raw')?$('#editor').val():$('#compiled').html(), "type": type}, function(data){
 				window.alert("Successfully saved to file!");
+			});
+		}
+		function printPDF(){
+			$.post('/printerFriendly', {data: $('#compiled').html()}, function(){
+				window.open('printerFriendly');
 			});
 		}
 	</script>
@@ -137,7 +174,7 @@
 <div class="tabs">
     <ul class="tab-links">
         <li class="active"><a href="#tab1">Editor</a></li>
-        <li><a href="#tab2" onclick="showMarkdown()">Markdown</a></li>
+        <li><a href="#tab2" onclick="showOutline()">Outline</a></li>
         <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
         <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
     </ul>
@@ -145,13 +182,24 @@
     <div class="tab-content">
         <div id="tab1" class="tab active">
 		    <div>
-		    	<button>Theorem</button>
-		    	<button>Equation</button>
+		    	<button onclick="addTheorem()">Theorem</button>
+		    	<button onclick="addEquation()">Equation</button>
 		    	<button onclick="addImage()">Image</button>
+                <button onclick="addLink()">Link</button>
+                <button onclick="addHead('1')">H1</button>
+                <button onclick="addHead('2')">H2</button>
+                <button onclick="addHead('3')">H3</button>
+                <button onclick="addBold()">B</button>
+                <button onclick="addItalic()">I</button>
+                <button onclick="addQuote()">Quote</button>
+                <button onclick="addCode()">Code</button>
+                <button onclick="addHR()">HR</button>
 		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
 		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
 		    	</form>
-		    	<button onclick="saveToFile()">Save File</button>
+		    	<button onclick="saveToFile('raw');">Save Raw</button>
+		    	<button onclick="saveToFile('HTML');">Save HTML</button>
+		    	<button onclick="printPDF();">Print PDF</button>
 		    </div>
 
         	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">
