@@ -8,8 +8,10 @@ function changeAllTags(source, tagList) {
 function changeTags(source, tag) {
 	// source = source.replace("\\" + tag, "<!---" + tag + "--->");
 	// source = source.replace("\\" + tag + "*", "<!---" + tag + "*--->");
-	source = source.replace("\\" + tag, "");
-	source = source.replace("\\" + tag + "*", "");
+	while(source.indexOf("\\" + tag) > -1){
+		source = source.replace("\\" + tag, "");
+		source = source.replace("\\" + tag + "*", "\n");
+	}
 	return source;
 }
 
