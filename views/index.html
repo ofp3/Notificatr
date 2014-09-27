@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>NoteKing</title>
-	<style>
+	<style media="screen">
 			/*----- Tabs -----*/
 		.tabs {
 		    width:100%;
@@ -68,6 +68,14 @@
 			background: #7F7F7F;
 		}
 	</style>
+	<style media="print">
+		.noPrint {
+			display: none;
+		}
+		.yesPrint {
+			display: block !important;
+		}
+	</style>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 	<script type="text/javascript" src="lib/ASCIIMathMLwFallback.js"></script>
 	<script type="text/javascript" src="notificator.js"></script>
@@ -123,6 +131,11 @@
 				window.alert("Successfully saved to file!");
 			});
 		}
+		function printPDF(){
+			$.post('/printerFriendly', {data: $('#compiled').html()}, function(){
+				window.open('printerFriendly');
+			});
+		}
 	</script>
 </head>
 <body>
@@ -145,6 +158,7 @@
 		    	</form>
 		    	<button onclick="saveToFile('raw');">Save Raw</button>
 		    	<button onclick="saveToFile('HTML');">Save HTML</button>
+		    	<button onclick="printPDF();">Print PDF</button>
 		    </div>
 
         	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">

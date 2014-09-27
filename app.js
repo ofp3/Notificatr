@@ -42,8 +42,27 @@ app.post('/saveToFile', function(req, res) {
 		fs.writeFile(filename, data, function(err){
 				if(err)
 					console.log(err);
+				res.download(filename);
 			});
-		res.status(304).send("DONE saving");
+		// res.status(304).send("DONE saving");
+	});
+});
+app.get('/printerFriendly', function(req, res){
+	res.render('printerFriendly.html');
+});
+app.post('/printerFriendly', function(req, res){
+	var data;
+	req.pipe(req.busboy);
+	req.busboy.on('field', function(fieldname, val){
+		if(fieldname == 'data')
+			data = val;
+	});
+	req.busboy.on('finish', function(){
+		fs.writeFile('views/printerFriendly.html', data, function(err){
+			if(err)
+				console.log(err);
+			res.status(304).send('OK');
+		});
 	});
 });
 app.use(express.static(__dirname));
