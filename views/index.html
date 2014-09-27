@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title></title>
+	<title>NoteKing</title>
 	<style>
 			/*----- Tabs -----*/
 		.tabs {
@@ -73,9 +73,9 @@
 	<script type="text/javascript" src="notificator.js"></script>
 	<script type="text/javascript" src="lib/markdown.js"></script>
 	<script>
-		var LIST_OF_TAGS = ["thm", "eq", "img"];
-		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/"};
-		var ENDING_CHARS = {"thm": "", "eq": "$eq$", "img": " \"\")"};
+		var LIST_OF_TAGS = ["thm", "eq", "img", "h1"];
+		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/", "h1": "", "h2": "", "h3": "###"};
+		var ENDING_CHARS = {"thm": "", "eq": "$eq$", "img": " \"\")", "h1": "\n===", "h2": "\n---", "h3": "###"};
 
 		jQuery(document).ready(function() {
 		    jQuery('.tabs .tab-links a').on('click', function(e)  {
@@ -118,6 +118,19 @@
 			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
 			window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
 		}
+		function saveToFile(){
+			// console.log($('#editor').val());
+			// $.ajax({
+			// 	type: 'POST',
+			// 	url: "/saveToFile",
+			// 	data: {"data": "stuff"},
+			// 	contentType: "application/json",
+			// 	complete: function(result){window.alert("Successfully saved to file!")}
+			// });
+			$.post("/saveToFile", {"data": $('#editor').val()}, function(data){
+				window.alert("Successfully saved to file!");
+			});
+		}
 	</script>
 </head>
 <body>
@@ -138,6 +151,7 @@
 		    	<form id="imageForm" action="/img" method="POST" enctype="multipart/form-data">
 		    		<input id="image_input" type="file" name="upload" onchange="imageSubmitted();" style="display: none;"/>
 		    	</form>
+		    	<button onclick="saveToFile()">Save File</button>
 		    </div>
 
         	<div style="display: inline-block; width: 48%; padding-right: 20px; vertical-align: top">

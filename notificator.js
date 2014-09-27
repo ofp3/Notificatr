@@ -8,8 +8,8 @@ function changeAllTags(source, startChars, endChars) {
 
 function changeTags(source, tag, startChar, endChar) {
 	while(source.indexOf("\\" + tag) > -1){
-		source = source.replace("\\" + tag + "*", endChar + "\n");
-		source = source.replace("\\" + tag, startChar);
+		source = source.replace("\\" + tag + "*", endChar);
+		source = source.replace("\\" + tag, "\n" + startChar);
 	}
 	return source;
 }
