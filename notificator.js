@@ -14,7 +14,6 @@ function changeAllTags(source, startChars, endChars) {
 	for(var tag in startChars){
 		source = changeTags(source, tag, startChars[tag], endChars[tag]);
 	}
-	console.log(source);
 	return source;
 }
 

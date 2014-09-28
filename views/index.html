@@ -163,16 +163,13 @@
 		}
 
 		function showOutline() {
-			console.log("Outline");
 			document.getElementById('tab2').innerHTML = markdown.toHTML(makeOutline(document.getElementById("editor").value));
 		}
 		function showTheorems() {
-			console.log("Theorems");
 			document.getElementById("tab3").innerHTML = markdown.toHTML(changeAllTags(filterTags(document.getElementById("editor").value, "thm", STARTING_CHARS["thm"]), STARTING_CHARS, ENDING_CHARS));
 			generic();
 		}
 		function showEquations() {
-			console.log("Equations");
 			document.getElementById("Equations").innerHTML = markdown.toHTML(filterEqns(document.getElementById("editor").value, STARTING_CHARS["eq"]));
 			generic();
 		}
@@ -212,12 +209,12 @@
 			document.getElementById('imageForm').submit();
 			var full_filepath = document.getElementById('image_input').value;
 			var filename = full_filepath.substr(full_filepath.lastIndexOf("\\") + 1, full_filepath.length);
-			//window.alert("Add \"\\img " + filename + "\\img*\" wherever you want this image to appear."); 
             $('#editor').insertAtCaret("\\img" + filename + "\\img*", "");
             updateCompiled();
 		}
 		function saveToFile(type){
-			$.post("/saveToFile", {"data": (type == 'raw')?$('#editor').val():$('#compiled').html(), "type": type, name: $('#file_select').val()}, function(data){
+			$.post("/File", {notebookName: $('#notebook_select').val(), fileName: $('#file_select').val(), data: $('#editor').val()},
+			function(data){
 				window.alert("Successfully saved to file!");
 			});
 		}
@@ -235,11 +232,14 @@
 				$('#create_text').css('display', 'initial');// Change create_text state
 			}else{
 				$('#file_select').removeAttr('disabled');	//Change file_select state
-				$.get('/file_listing/' + $('#notebook_select').val(), function(result){
-					var arr = result;//JSON.parse(result);
-					for(var i = 0; i < arr.length; i++)
-						$('#file_select').html($('#file_select').html() + "<option class='from_listing' val='" + arr[i].substr(0, arr[i].length - 4) + 
-							"'>" + arr[i].substr(0, arr[i].length - 4) + "</option>");
+				$.get('/Notebook', function(result){
+					var i = 0;
+					while(i < result.length && result[i].title != $('#notebook_select').val())
+						i++;
+					if(i != result.length)
+						for(var j = 0; j < result[i].children.length; j++)
+							$('#file_select').html($('#file_select').html() + "<option class='from_listing' val='" + result[i].children[j].file_name + 
+								"'>" + result[i].children[j].file_name + "</option>");
 				});
 			}
 		}
@@ -257,9 +257,11 @@
 
 		}
 		function file_select_button_clicked(){
+			$('#editor').html("");
+			$('#compiled').html("");
 			if($('#notebook_select').val() == ""){
 				//create notebook
-				$.post('/createNotebook', {name: $('#create_text').val()}, function(result){
+				$.post('/Notebook', {notebookName: $('#create_text').val()}, function(result){
 					alert("New Notebook " + result + " created!");
 					//Add the new notebook option selected to the notebook_select
 					$('#notebook_select').html($('#notebook_select').html() + "<option val='" + result + "'selected>" + result + "</option>");
@@ -268,15 +270,15 @@
 			}
 			else if($('#file_select').val() == ""){
 				//create note
-				$.post('/createNote', {name: $('#create_text').val()}, function(result){
+				$.post('/File', {notebookName: $('#notebook_select').val(), fileName: $('#create_text').val(), data: ""}, function(result){
 					alert("New Note " + result + " created!");
 					//Add the new note option selected to the file_select
-					$('#file_select').html($('#file_select').html() + "<option class='from_listing' val='" + result.substr(0, result.length - 4) + "'selected>" + result.substr(0, result.length - 4) + "</option>");
+					$('#file_select').html($('#file_select').html() + "<option class='from_listing' val='" + result + "'selected>" + result + "</option>");
 					file_select_changed();
 				});
 			}
 			else{
-				$.post('/openNote', {name: $('#file_select').val()}, function(result){
+				$.get('/File?notebookName='+$('#notebook_select').val()+'&fileName='+$('#file_select').val(), function(result){
 					$('#editor').val(result);
 					updateCompiled();
 				});
@@ -333,12 +335,11 @@
          	console.log(user_id);
          	//ITS HERE
         }
-
-		window.onload = function(){
-			$.get('/directory_listing', function(result){
-				var arr = result;
+		function loadEverything(){
+			$.get('/Notebook', function(result){
+				var arr = result; /*JSON.parse(result);*/
 				for(var i = 0; i < arr.length; i++)
-					$('#notebook_select').html($('#notebook_select').html() + "<option val='" + arr[i] + "'>" + arr[i] + "</option>");
+					$('#notebook_select').html($('#notebook_select').html() + "<option val='" + arr[i].title + "'>" + arr[i].title + "</option>");
 			});
 		}
 	</script>
@@ -371,7 +372,6 @@
         <li><a href="#tab3" onclick="showTheorems()">Theorems</a></li>
         <li><a href="#tab4" onclick="showEquations()">Equations</a></li>
     	<span style="float: right">
-    		<!-- <label id="title_label" for="note_title">Title: </label> -->
     		<input id="create_text" type="text" placeholder='Enter New Title Here' id="title"/>
     		<label for="notebook_select">Notebook:</label>
     		<select id="notebook_select" onchange="notebook_select_changed();">
