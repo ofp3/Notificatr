@@ -7,7 +7,7 @@ var db = mongoose.connection;
 db.on('error', console.error);
 db.once('open', function() {
   var fileSchema = new mongoose.Schema({
-    filename: 'string', 
+    file_name: 'string', 
     creationTime: 'number'
   });
   var notebookSchema = new mongoose.Schema({
@@ -20,9 +20,9 @@ db.once('open', function() {
     children: [notebookSchema]
   });
 
-  var File = mongoose.model('File', fileSchema);
-  var Notebook = mongoose.model('Notebook', notebookSchema);
-  var User = mongoose.model('User', userSchema);
+  File = mongoose.model('File', fileSchema);
+  Notebook = mongoose.model('Notebook', notebookSchema);
+  User = mongoose.model('User', userSchema);
 });
 mongoose.connect('mongodb://localhost/annote');
 app.use(busboy());
@@ -48,8 +48,7 @@ app.post('/img', function(req, res) {
 	});
 });
 app.post('/File', function(req, res) {
-	var data; 
-	var filename;
+	var data;
 	var extension;
 	var name;
 	var notebookName;
@@ -59,13 +58,7 @@ app.post('/File', function(req, res) {
 		if(fieldname == "data"){
 			data = val;
 		}
-		else if(fieldname == "type"){
-			if(val == "raw")
-				extension = ".txt";
-			else
-				extension = ".html";
-		}
-		else if(fieldname == "name"){
+		else if(fieldname == "fileName"){
 			name = val;
 		}
 		else if(fieldname == "notebookName") {
@@ -73,18 +66,25 @@ app.post('/File', function(req, res) {
 		}
 	});
 	req.busboy.on('finish', function(){
-		fs.writeFile("files/" + notebookName + name + extension, data, function(err){
+		fs.writeFile("files/" + notebookName + "/" + name, data, function(err){
 				if(err)
-					console.log(err);
-				res.download("files/" + name + extension);
+					console.log("this error!\n\n" + err);
+				// res.download("files/" + notebookName + "/" +  name);
 			});
-			Notebook.findOne({title: notebookName}, function(err, nb){
-				nb.children.push({
-					fileName: 'files/' + notebookName + name + extension,
-					creationTime: (new Date().getTime())
-				});
-				nb.save();
-			});
+
+		var note = new File({
+			file_name: name,
+			creationTime: new Date().getTime()
+		});
+		note.save(function(err){
+			if(err) return console.error(err);
+		});
+
+		Notebook.findOne({title: notebookName}, function(err, nb){
+			nb.children.push(note);
+			nb.save();
+		});
+		res.send(name);
 	});
 });
 
@@ -103,11 +103,13 @@ app.post('/Notebook', function(req, res){
 		nb.save(function(err) {
 			if (err) return console.error(err);
 		});
+		console.log("making directory "+value);
+		fs.mkdirSync('files/' + value);
 		res.send(value);
 	});
 });
 app.get('/File', function(req, res){
-	fs.readFile("files/" + req.params.fileName, function(err, data){
+	fs.readFile("files/" + req.query.notebookName + "/" + req.query.fileName, function(err, data){
 		if(err){
 			console.log(err);
 		}
@@ -120,7 +122,7 @@ app.get('/Notebook', function(req, res) {
 	});	
 });
 app.get('/printerFriendly', function(req, res){
-	res.render('printerFriendly/' + USERNAME + '.html');
+	res.render('printerFriendly.html');
 });
 app.post('/printerFriendly', function(req, res){
 	var data;
@@ -130,7 +132,7 @@ app.post('/printerFriendly', function(req, res){
 			data = val;
 	});
 	req.busboy.on('finish', function(){
-		fs.writeFile('views/printerFriendly/' + USERNAME + '.html', data, function(err){
+		fs.writeFile('views/printerFriendly.html', data, function(err){
 			if(err)
 				console.log(err);
 			res.status(304).send('OK');
