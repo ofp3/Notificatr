@@ -1,8 +1,14 @@
 var express = require('express');
+var session = require('express-session');
 var busboy = require('connect-busboy');
 var fs = require('fs');
 var mongoose = require('mongoose');
 var app = express();
+app.use(session({
+	secret: 'annote',
+	resave: false,
+	saveUninitialized: true
+}));
 var db = mongoose.connection;
 db.on('error', console.error);
 db.once('open', function() {
@@ -27,6 +33,18 @@ db.once('open', function() {
 mongoose.connect('mongodb://localhost/annote');
 app.use(busboy());
 app.engine("html", require('ejs').renderFile);
+app.get('/login', function(req, res) {
+	req.session.user = req.params.username;
+	User.find({email: username}, function(err, usr) {
+		if (usr.length === 0) {
+			var newUser = new User({
+				username: req.params.username.substring(0, req.params.username.indexOf('@')),
+				email: req.params.username,
+				children: []
+			});
+		}	
+	});
+});
 
 app.get('/', function(req, res) {
 	res.render('index.html');
@@ -96,14 +114,13 @@ app.post('/Notebook', function(req, res){
 			value = val;
 	});
 	req.busboy.on('finish', function(){
-		var nb = new Notebook({
-			title: value,
-			children: []
+		User.findOne({email: req.session.username}, function(err, curUser){
+			curUser.children.push({
+				title: value,
+				children: []
+			});	
+			curUser.save();
 		});
-		nb.save(function(err) {
-			if (err) return console.error(err);
-		});
-		res.send(value);
 	});
 });
 app.get('/File', function(req, res){
@@ -115,8 +132,8 @@ app.get('/File', function(req, res){
 	});
 });
 app.get('/Notebook', function(req, res) {
-	Notebook.find({}, function(err, nbs) {
-		res.send(nbs);
+	User.findOne({email: req.session.username}, function(err, curUser) {
+		res.send(curUser.children);
 	});	
 });
 app.get('/printerFriendly', function(req, res){
