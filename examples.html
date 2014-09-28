@@ -1,0 +1,258 @@
+
+<html>
+<head>
+<title>an\note Examples</title>
+<script type="text/javascript" src="lib/ASCIIMathTeXImg.js"></script>
+<script>
+function converttotex() {
+	var tex = AMTparseExpr(document.getElementById("amin").value.replace(/^\s+/g,""),false)[0];
+	document.getElementById("output").innerHTML = "<img src='http://www.imathas.com/cgi-bin/mimetex.cgi?"+tex+"'>";
+	document.getElementById("out2").innerHTML = "TeX string generated: "+ tex;
+}
+</script>
+</head>
+<body>
+<h2>Markdown Standard Syntax</h2>
+
+<table class="wikitable" border="3">
+<tr>
+<th>Markdown Syntax</th>
+<th>HTML Result</th>
+<th>Text Viewed After an\note Processing</th>
+</tr>
+<tr valign="top">
+<td>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr">
+<div class="text source-text">
+<pre class="de1">
+ Heading
+ =======
+ 
+ Sub-heading
+ -----------
+ 
+ h3. Traditional html title
+ 
+ Paragraphs are separated
+ by a blank line.
+ 
+ Let 2 spaces at the end of a line to do a  
+ line break
+ 
+ Text attributes *italic*,
+ **bold**, `monospace`.
+ 
+ A [link](http://example.com).
+ &lt;&lt;&lt;   No space between ] and (  &gt;&gt;&gt;
+ 
+ Shopping list:
+ 
+   * apples
+   * oranges
+   * pears
+ 
+ Numbered list:
+ 
+   1. apples
+   2. oranges
+   3. pears
+ 
+ The rain---not the reign---in
+ Spain.
+</pre></div>
+</div>
+</td>
+<td>
+<div dir="ltr" class="mw-geshi mw-code mw-content-ltr">
+<div class="html5 source-html5">
+<pre class="de1">
+<span class="sc2">&lt;<span class="kw2">h1</span>&gt;</span>Heading<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">h1</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">h2</span>&gt;</span>Sub-heading<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">h2</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">h3</span>&gt;</span>Traditional html title<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">h3</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>Paragraphs are separated
+by a blank line.<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>Let 2 spaces at the end of a line to do a<span class="sc2">&lt;<span class="kw2">br</span> <span class="sy0">/</span>&gt;</span>
+line break<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>Text attributes <span class="sc2">&lt;<span class="kw2">em</span>&gt;</span>italic<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">em</span>&gt;</span>,
+<span class="sc2">&lt;<span class="kw2">strong</span>&gt;</span>bold<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">strong</span>&gt;</span>,
+<span class="sc2">&lt;<span class="kw2">code</span>&gt;</span>monospace<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">code</span>&gt;</span>.<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>A <span class="sc2">&lt;<span class="kw2">a</span> <span class="kw3">href</span><span class="sy0">=</span><span class="st0">"http://example.com"</span>&gt;</span>link<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">a</span>&gt;</span>.<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>Shopping list:<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">ul</span>&gt;</span>
+<span class="sc2">&lt;<span class="kw2">li</span>&gt;</span>apples<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">li</span>&gt;</span>
+<span class="sc2">&lt;<span class="kw2">li</span>&gt;</span>oranges<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">li</span>&gt;</span>
+<span class="sc2">&lt;<span class="kw2">li</span>&gt;</span>pears<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">li</span>&gt;</span>
+<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">ul</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>Numbered list:<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">ol</span>&gt;</span>
+<span class="sc2">&lt;<span class="kw2">li</span>&gt;</span>apples<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">li</span>&gt;</span>
+<span class="sc2">&lt;<span class="kw2">li</span>&gt;</span>oranges<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">li</span>&gt;</span>
+<span class="sc2">&lt;<span class="kw2">li</span>&gt;</span>pears<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">li</span>&gt;</span>
+<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">ol</span>&gt;</span>
+ 
+<span class="sc2">&lt;<span class="kw2">p</span>&gt;</span>The rain<span class="sc1">&amp;mdash;</span>not the
+reign<span class="sc1">&amp;mdash;</span>in Spain.<span class="sc2">&lt;<span class="sy0">/</span><span class="kw2">p</span>&gt;</span>
+</pre></div>
+</div>
+</td>
+<td>
+<div style="color: #000000; background: none; overflow: hidden; page-break-after: avoid; font-size: 1.5em; font-family: Georgia,Times,serif; margin-top: 1em; margin-bottom: 0.25em; line-height: 1.3; padding: 0; border-bottom: 1px solid #AAAAAA;">Heading</div>
+<div style="color: #000000; background: none; overflow: hidden; page-break-after: avoid; font-size: 1.17em; font-weight: bold; margin-top: 0.3em; margin-bottom: 0; line-height: 1.6; padding-top: 0.5em; padding-bottom: 0;">Sub-heading</div>
+<div style="color: #000000; background: none; overflow: hidden; page-break-after: avoid; font-size: 100%; font-weight: bold; margin-top: 0.3em; margin-bottom: 0; line-height: 1.6; padding-top: 0.5em; padding-bottom: 0;">Traditional html title</div>
+<p>Paragraphs are separated by a blank line.</p>
+<p>Let 2 spaces at the end of a line to do a<br />
+line break</p>
+<p>Text attributes <i>italic</i>, <strong>bold</strong>, <code>monospace</code>.</p>
+<p>A <a rel="nofollow" class="external text" href="http://example.com">link</a>.</p>
+<p>Shopping list:</p>
+<ul>
+<li>apples</li>
+<li>oranges</li>
+<li>pears</li>
+</ul>
+<p>Numbered list:</p>
+<ol>
+<li>apples</li>
+<li>oranges</li>
+<li>pears</li>
+</ol>
+<p>The rain—not the reign—in Spain.</p>
+</td>
+</tr>
+</table>
+<p>Courtesy of <a href="http://en.wikipedia.org/wiki/Markdown">http://en.wikipedia.org/wiki/Markdown</a></p>
+<br>
+<br>
+<HR>
+<br>
+<br>
+<h2>ASCIIMath Image Fallback Scripts</h2>
+<table id="examples" border="3" cellpadding="10">
+<tr>
+<th>Type this</th>
+<th>See that</th>
+<th>Comment</th>
+</tr>
+<tr>
+<td>\`x^2+y_1+z_12^34\`</td>
+<td>`x^2+y_1+z_12^34`</td>
+<td>subscripts as in TeX, but numbers are treated as a unit</td>
+</tr>
+<tr>
+<td>\`sin^-1(x)\`</td>
+<td>`sin^-1(x)`</td>
+<td>function names are treated as constants</td>
+</tr>
+<tr>
+<td>\`d/dxf(x)=lim_(h->0)(f(x+h)-f(x))/h\`</td>
+<td>`d/dxf(x)=lim_(h->0)(f(x+h)-f(x))/h`</td>
+<td>complex subscripts are bracketed, displayed under lim</td>
+</tr>
+<tr>
+<td>\$\frac{d}{dx}f(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}\$</td>
+<td>$\frac{d}{dx}f(x)=\lim_{h\to 0}\frac{f(x+h)-f(x)}{h}$</td>
+<td>standard LaTeX notation is an alternative</td>
+</tr>
+<tr>
+<td>\`f(x)=sum_(n=0)^oo(f^((n))(a))/(n!)(x-a)^n\`</td>
+<td>`f(x)=sum_(n=0)^oo(f^((n))(a))/(n!)(x-a)^n`</td>
+<td>f^((n))(a) must be bracketed, else the numerator is only `a`</td>
+</tr>
+<tr>
+<td>\$f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}(x-a)^n\$</td>
+<td>$f(x)=\sum_{n=0}^\infty\frac{f^{(n)}(a)}{n!}(x-a)^n$</td>
+<td>standard LaTeX produces the same result</td>
+</tr>
+<tr>
+<td>\`int_0^1f(x)dx\`</td>
+<td>`int_0^1f(x)dx`</td>
+<td>subscripts must come before superscripts</td>
+</tr>
+<tr>
+<td>\`[[a,b],[c,d]]((n),(k))\`</td>
+<td>`[[a,b],[c,d]]((n),(k))`</td>
+<td>matrices and column vectors are simple to type</td>
+</tr>
+<tr>
+<td>\`x/x={(1,if x!=0),(text{undefined},if x=0):}\`</td>
+<td>`x/x={(1,if x!=0),(text{undefined},if x=0):}`</td>
+<td>piecewise defined function are based on matrix notation</td>
+</tr>
+<tr>
+<td>\`a//b\`</td>
+<td>`a//b`</td>
+<td>use // for inline fractions</td>
+</tr>
+<tr>
+<td>\`(a/b)/(c/d)\`</td>
+<td>`(a/b)/(c/d)`</td>
+<td>with brackets, multiple fraction work as expected</td>
+</tr>
+<tr>
+<td>\`a/b/c/d\`</td>
+<td>`a/b/c/d`</td>
+<td>without brackets the parser chooses this particular expression</td>
+</tr>
+<tr>
+<td>\`((a*b))/c\`</td>
+<td>`((a*b))/c`</td>
+<td>only one level of brackets is removed; * gives standard product</td>
+</tr>
+<tr>
+<td>\`sqrtsqrtroot3x\`</td>
+<td>`sqrtsqrtroot3x`</td>
+<td>spaces are optional, only serve to split strings that should not match</td>
+</tr>
+<tr>
+<td>\`(:a,b:) and {:(x,y),(u,v):}\`</td>
+<td>`(:a,b:) and {:(x,y),(u,v):}`</td>
+<td>angle brackets and invisible brackets</td>
+</tr>
+<tr>
+<td>\`(a,b]={x in RR : a < x <= b}\`</td>
+<td>`(a,b]={x in RR : a < x <= b}`</td>
+<td>grouping brackets don't have to match</td>
+</tr>
+<tr>
+<td>\`abc-123.45^-1.1\`</td>
+<td>`abc-123.45^-1.1`</td>
+<td>non-tokens are split into single characters,<br/>
+but decimal numbers are parsed with possible sign</td>
+</tr>
+<tr>
+<td>\`hat(ab) bar(xy) ulA vec v dotx ddot y\`</td>
+<td>`hat(ab) bar(xy) ulA vec v dotx ddot y`</td>
+<td>accents can be used on any expression (work well in IE)</td>
+</tr>
+<tr>
+<td>\`bb{AB3}.bbb(AB].cc(AB).fr{AB}.tt[AB].sf(AB)\`</td>
+<td>`bb{AB3}.bbb(AB].cc(AB).fr{AB}.tt[AB].sf(AB)`</td>
+<td>font commands; can use any brackets around argument</td>
+</tr>
+<tr>
+<td>\`stackrel"def"= or \stackrel{\Delta}{=}" "("or ":=)\`</td>
+<td>`stackrel"def"= or \stackrel{\Delta}{=}" "("or ":=)`</td>
+<td>symbols can be stacked</td>
+</tr>
+<tr>
+<td>\`{::}_(\ 92)^238U\`</td>
+<td>`{::}_(\ 92)^238U`</td>
+<td>prescripts simulated by subsuperscripts</td>
+</tr>
+</table>
+<p>Courtesy of <a href="http://dlippman.imathas.com/asciimathtex/AMT.html">http://dlippman.imathas.com/asciimathtex/AMT.html</a>.</p>
+<br>
+<br>
+</body>
+</html>
+

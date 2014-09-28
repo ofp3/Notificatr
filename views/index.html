@@ -2,6 +2,7 @@
 <html>
 <head>
 	<title>NoteKing</title>
+
 	<style media="screen">
 			/*----- Tabs -----*/
 		.tabs {
@@ -67,6 +68,62 @@
 		body {
 			background: #7F7F7F;
 		}
+		#help_hover_div {
+			position: absolute;
+			left:50%;
+			top:50%;
+			margin-top: -385px;
+			width: 420px;
+			z-index: 20;
+			display: none;
+			background: #FFFFFF;
+			border: 3px ridge gray;
+			padding: 10px;
+			border-radius: 5px;
+			color: #000000;
+		}
+		#help_button {
+			position: absolute;
+			margin-top: 16px;
+			margin-left: 0px;
+			border-radius: 3px;
+			width: 36px;
+			height: 28px;
+			border: none;
+		    color: #4c4c4c;
+		    transition:all linear 0.15s;
+		    outline: none;
+		    text-decoration: underline;
+		    background: #7FB5DA;
+		}
+		#help_button.inactive:hover {
+			background: #a7cce5 !important;
+			color: #4c4c4c !important;
+		    text-decoration: none;
+		}
+		#help_button.active:hover {
+		    text-decoration: none;
+		}
+
+		#signinButton {
+			float: right;
+			margin-top: 10px;
+			z-index: 3;
+		}
+		#sign_out_button {
+			float: right;
+			margin-top: 10px;
+			z-index: 3;
+			height: 31px;
+			width: 114px;
+			border-radius: 3px;
+			box-shadow: none;
+			background: #DD4B39;
+			border: none;
+			color: white;
+			font: bold;
+		}
+
 	</style>
 	<style media="print">
 		.noPrint {
@@ -225,6 +282,58 @@
 				});
 			}
 		}
+		function toggleDiv() {
+			if( $("#help_hover_div").css("display") == "none") {
+				$("#help_hover_div").css("display", "initial");
+				$("#help_button").css("background", "white");
+				$("#help_button").removeClass("inactive");
+				$("#help_button").addClass("active");
+			}
+			else {
+				$("#help_hover_div").css("display", "none");
+				$("#help_button").css("background", "#7FB5DA");
+				$("#help_button").removeClass("active");
+				$("#help_button").addClass("inactive");
+			}
+		}
+		function disconnect() {
+			gapi.auth.signOut();
+			document.getElementById('signinButton').setAttribute('style', 'display: "initial"');
+			$("#sign_out_button").css("display", "none");
+		}
+
+		var user_id;
+
+        function loginFinishedCallback(authResult) {
+            if (authResult) {
+                if (authResult['error'] == undefined){
+                    gapi.client.load('plus','v1', loadProfile);  // Trigger request to get the email address.
+                    document.getElementById('signinButton').setAttribute('style', 'display: none');
+		    		$("#sign_out_button").css("display", "initial");
+                } else {
+                    console.log('An error occurred');
+                }
+            } else {
+                console.log('Empty authResult');  // Something went wrong
+            }
+        }
+
+        /**
+         * Uses the JavaScript API to request the user's profile, which includes
+         * their basic information.
+         */
+        function loadProfile(){
+            var request = gapi.client.plus.people.get( {'userId' : 'me'} );
+            request.execute(loadProfileCallback);
+        }
+
+        function loadProfileCallback(obj) {
+         	user_id = obj["id"];
+         	//THIS IS THE ID
+         	console.log(user_id);
+         	//ITS HERE
+        }
+
 		window.onload = function(){
 			$.get('/directory_listing', function(result){
 				var arr = result;
@@ -234,8 +343,28 @@
 		}
 	</script>
 </head>
+
+<script type="text/javascript">
+      (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/client:plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    </script>
 <body>
 <div class="tabs">
+	<button id="help_button" class="inactive" onclick="toggleDiv()">?</button>
+	<button id="sign_out_button" onclick="disconnect()">Log Out</button>
+	<span id="signinButton">
+	  <span
+	    class="g-signin"
+	    data-callback="loginFinishedCallback"
+	    data-clientid="359002613152-usmde25dl1gb4cvmnhs7hpoktqssis5j.apps.googleusercontent.com"
+	    data-cookiepolicy="single_host_origin"
+	    data-requestvisibleactions="http://schema.org/AddAction"
+	    data-scope="https://www.googleapis.com/auth/plus.login">
+	  </span>
+	</span>
     <ul class="tab-links">
         <li class="active"><a href="#tab1">Editor</a></li>
         <li><a href="#tab2" onclick="showOutline()">Outline</a></li>
@@ -301,6 +430,83 @@
             <pre id="Equations">Equations TBD</pre>
         </div>
     </div>
+</div>
+<div id="help_hover_div">
+<b>How to use:</b>
+<p>If you'd rather not deal with typing out the <strong>an\note</strong> tags,
+	<br>you are free to use the provided buttons, but if you'd really
+	<br>like to step up your notetaking game, here is the full set of
+	<br>provided <strong>an\note</strong> tags:</p>
+<table id="examples" border="1" cellpadding="5">
+<tr>
+<th>Type</th>
+<th>Start Tag</th>
+<th>End Tag</th>
+</tr>
+<tr>
+<td>Theorem</td>
+<td>\thm</td>
+<td>\thm*</td>
+</tr>
+<tr>
+<td>Equation</td>
+<td>\eq</td>
+<td>\eq*</td>
+</tr>
+<tr>
+<td>Header</td>
+<td>\h1, \h2, \h3</td>
+<td>\h1*, \h2*, \h3*</td>
+</tr>
+</table>
+<p>In addition to the <strong>an\note</strong> specific tags, your notes will also 
+	<br>support Markdown formatting and ASCIIMath Image Fallback Scripts 
+	<br>(in equation mode). This means that you can use tags like...</p>
+<table id="examples" border="1" cellpadding="5">
+<tr>
+<th>Type</th>
+<th>Start Tag</th>
+<th>End Tag</th>
+</tr>
+<tr>
+<td>Code</td>
+<td>''' (above text)</td>
+<td>''' (below text)</td>
+</tr>
+<tr>
+<td>Bold, Italics</td>
+<td>**, *</td>
+<td>**, *</td>
+</tr>
+<tr>
+<td>Horizontal Line</td>
+<td>---</td>
+</tr>
+</table>
+<p>...from Markdown, and...</p>
+<table id="examples" border="1" cellpadding="5">
+<tr>
+<th>Type</th>
+<th>Start Tag</th>
+<th>Example</th>
+</tr>
+<tr>
+<td>Square Root</td>
+<td>sqrt</td>
+<td>sqrt2</td>
+</tr>
+<tr>
+<td>Greek Letters</td>
+<td>\theta, \alpha, \delta</td>
+</tr>
+<tr>
+<td>Integral</td>
+<td>int</td>
+<td>intxdx</td>
+</tr>
+</table>
+<p>...from ASCIIMath Image Fallback Scripts. For more syntax and 
+	<br>examples, <a href="../examples.html">click here.</a></p>
 </div>
 </body>
 </html>
