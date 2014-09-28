@@ -82,9 +82,9 @@
 	<script type="text/javascript" src="lib/markdown.js"></script>
     <script type="text/javascript" src="lib/insertatcursor.js"></script>
 	<script>
-		var LIST_OF_TAGS = ["thm", "eq", "img", "h1"];
-		var STARTING_CHARS = {"thm": "", "eq": "$eq$", "img": "![](files/", "h1": "", "h2": "", "h3": "###"};
-		var ENDING_CHARS = {"thm": "", "eq": "$eq$", "img": " \"\")", "h1": "\n===", "h2": "\n---", "h3": "###"};
+		var LIST_OF_TAGS = ["eq", "thm", "img", "h1"];
+		var STARTING_CHARS = {"eq": "$eq$", "thm": "", "img": "![](files/", "h1": "", "h2": "", "h3": "###"};
+		var ENDING_CHARS = {"eq": "$eq$", "thm": "", "img": " \"\")", "h1": "\n===", "h2": "\n---", "h3": "###"};
 
 		jQuery(document).ready(function() {
 		    jQuery('.tabs .tab-links a').on('click', function(e)  {
@@ -111,7 +111,8 @@
 		}
 		function showTheorems() {
 			console.log("Theorems");
-			document.getElementById("tab3").innerHTML = markdown.toHTML(filterTags(document.getElementById("editor").value, "thm", STARTING_CHARS["thm"]));
+			document.getElementById("tab3").innerHTML = markdown.toHTML(changeAllTags(filterTags(document.getElementById("editor").value, "thm", STARTING_CHARS["thm"]), STARTING_CHARS, ENDING_CHARS));
+			generic();
 		}
 		function showEquations() {
 			console.log("Equations");
