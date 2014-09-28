@@ -47,6 +47,11 @@ app.get('/login/:username', function(req, res) {
 	res.send('OK');
 	});
 });
+app.get('/logout', function(req, res) {
+	req.session.destroy();
+	res.end();
+
+});
 
 app.get('/', function(req, res) {
 	res.render('index.html');
