@@ -200,6 +200,8 @@
 
 		}
 		function file_select_button_clicked(){
+			$('#editor').html("");
+			$('#compiled').html("");
 			if($('#notebook_select').val() == ""){
 				//create notebook
 				$.post('/Notebook', {notebookName: $('#create_text').val()}, function(result){
@@ -219,13 +221,13 @@
 				});
 			}
 			else{
-				$.get('/File/?notebookName='+$('#notebook_select').val()+'&fileName='+$('#file_select').val(), function(result){
+				$.get('/File?notebookName='+$('#notebook_select').val()+'&fileName='+$('#file_select').val(), function(result){
 					$('#editor').val(result);
 					updateCompiled();
 				});
 			}
 		}
-		window.onload = function(){
+		function loadEverything(){
 			$.get('/Notebook', function(result){
 				var arr = result; /*JSON.parse(result);*/
 				for(var i = 0; i < arr.length; i++)

@@ -38,7 +38,7 @@ app.get('/login/:username', function(req, res) {
 	User.find({email: req.params.username}, function(err, usr) {
 		if (usr.length === 0) {
 			var newUser = new User({
-				username: req.params.username.substring(0, req.params.username.indexOf('@')),
+				username: req.params.username,
 				email: req.params.username,
 				children: []
 			});
