@@ -328,13 +328,6 @@
             var request = gapi.client.plus.people.get( {'userId' : 'me'} );
             request.execute(loadProfileCallback);
         }
-
-        function loadProfileCallback(obj) {
-         	user_id = obj["id"];
-         	//THIS IS THE ID
-         	console.log(user_id);
-         	//ITS HERE
-        }
 		function loadEverything(){
 			$.get('/Notebook', function(result){
 				var arr = result; /*JSON.parse(result);*/
@@ -342,6 +335,16 @@
 					$('#notebook_select').html($('#notebook_select').html() + "<option val='" + arr[i].title + "'>" + arr[i].title + "</option>");
 			});
 		}
+        function loadProfileCallback(obj) {
+         	user_id = obj["id"];
+
+         	//THIS IS THE ID
+         	console.log(user_id);
+         	//ITS HERE
+         	$.get("/login/"+user_id, function(result){
+         		loadEverything();
+         	});
+        }
 	</script>
 </head>
 

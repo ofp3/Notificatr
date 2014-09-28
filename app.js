@@ -44,7 +44,7 @@ app.get('/login/:username', function(req, res) {
 			});
 			newUser.save();
 		}	
-	res.redirect('/');
+	res.send('OK');
 	});
 });
 
