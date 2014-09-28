@@ -1,23 +1,35 @@
 var express = require('express');
 var busboy = require('connect-busboy');
 var fs = require('fs');
+var mongoose = require('mongoose');
 var app = express();
+var db = mongoose.connection;
+db.on('error', console.error);
+db.once('open', function() {
+  var fileSchema = new mongoose.Schema({
+    filename: 'string', 
+    creationTime: 'number'
+  });
+  var notebookSchema = new mongoose.Schema({
+    title: 'string',
+    children: [fileSchema]
+  });
+  var userSchema = new mongoose.Schema({
+    username: 'string',
+    email: 'string',
+    children: [notebookSchema]
+  });
 
-var USERNAME = 'ofp3';
-
+  var File = mongoose.model('File', fileSchema);
+  var Notebook = mongoose.model('Notebook', notebookSchema);
+  var User = mongoose.model('User', userSchema);
+});
+mongoose.connect('mongodb://localhost/annote');
 app.use(busboy());
 app.engine("html", require('ejs').renderFile);
 
 app.get('/', function(req, res) {
 	res.render('index.html');
-});
-app.get('/directory_listing', function(req, res){
-	var listing = fs.readdirSync('files/');
-	res.send(listing);
-});
-app.get('/file_listing/:notebook', function(req, res){
-	var listing = fs.readdirSync('files/' + req.params.notebook);
-	res.send(listing);
 });
 app.post('/img', function(req, res) {
 	var fstream;
@@ -35,11 +47,12 @@ app.post('/img', function(req, res) {
 		res.status(304).send("Done");
 	});
 });
-app.post('/saveToFile', function(req, res) {
+app.post('/File', function(req, res) {
 	var data; 
 	var filename;
 	var extension;
 	var name;
+	var notebookName;
 	req.pipe(req.busboy);
 	req.busboy.on('field', function(fieldname, val){
 		console.log("saveToFile got a field");
@@ -55,54 +68,56 @@ app.post('/saveToFile', function(req, res) {
 		else if(fieldname == "name"){
 			name = val;
 		}
+		else if(fieldname == "notebookName") {
+			notebookName = val;		
+		}
 	});
 	req.busboy.on('finish', function(){
-		fs.writeFile("files/" + name + extension, data, function(err){
+		fs.writeFile("files/" + notebookName + name + extension, data, function(err){
 				if(err)
 					console.log(err);
 				res.download("files/" + name + extension);
 			});
-		// res.status(304).send("DONE saving");
+			Notebook.findOne({title: notebookName}, function(err, nb){
+				nb.children.push({
+					fileName: 'files/' + notebookName + name + extension,
+					creationTime: (new Date().getTime())
+				});
+				nb.save();
+			});
 	});
 });
-app.post('/createNotebook', function(req, res){
+
+app.post('/Notebook', function(req, res){
 	var value;
 	req.pipe(req.busboy);
 	req.busboy.on('field', function(fieldname, val){
-		if(fieldname == 'name')
+		if(fieldname == 'notebookName')
 			value = val;
 	});
 	req.busboy.on('finish', function(){
+		var nb = new Notebook({
+			title: value,
+			children: []
+		});
+		nb.save(function(err) {
+			if (err) return console.error(err);
+		});
 		res.send(value);
 	});
 });
-app.post('/createNote', function(req, res){
-	var value;
-	req.pipe(req.busboy);
-	req.busboy.on('field', function(fieldname, val){
-		if(fieldname == 'name')
-			value = val;
-	});
-	req.busboy.on('finish', function(){
-		res.send(value);
-	});
-});
-app.post('/openNote', function(req, res){
-	var value;
-	req.pipe(req.busboy);
-	req.busboy.on('field', function(fieldname, val){
-		if(fieldname == 'name')
-			value = val;
-	});
-	req.busboy.on('finish', function(){
-		fs.readFile("files/" + value + ".txt", function(err, data){
-			if(err){
-				console.log(err);
-			}
-			res.send(data);
+app.get('/File', function(req, res){
+	fs.readFile("files/" + req.params.fileName, function(err, data){
+		if(err){
+			console.log(err);
 		}
-	);
+		res.send(data);
 	});
+});
+app.get('/Notebook', function(req, res) {
+	Notebook.find({}, function(err, nbs) {
+		res.send(nbs);
+	});	
 });
 app.get('/printerFriendly', function(req, res){
 	res.render('printerFriendly/' + USERNAME + '.html');
