@@ -16,6 +16,17 @@
             });
         });
 
+        $(window).bind('keydown', function(event) {
+            if (event.ctrlKey || event.metaKey) {
+                switch (String.fromCharCode(event.which).toLowerCase()) {
+                case 's':
+                    event.preventDefault();
+                    saveToFile('raw');
+                    break;
+                }
+            }
+        });
+
         function updateCompiled(){
             document.getElementById('compiled').innerHTML = markdown.toHTML(changeAllTags(document.getElementById("editor").value, STARTING_CHARS, ENDING_CHARS));
             generic();
